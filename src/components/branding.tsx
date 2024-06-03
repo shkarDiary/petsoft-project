@@ -1,11 +1,12 @@
 import React from "react";
+import H1 from "./h1";
 
 export default function Branding() {
   return (
     <section>
-      <h1 className="font-medium text-2xl leading-6">
+      <H1>
         Pet<span className="font-semibold ">Soft</span>
-      </h1>
+      </H1>
       <p className="text-lg opacity-80">Manage your pet daycare with ease</p>
     </section>
   );
