@@ -1,6 +1,7 @@
 "use client";
 import { usePetContext } from "@/lib/hooks";
 import Image from "next/image";
+import PetButton from "./pet-button";
 
 export default function PetDetails() {
   const { selectedPet } = usePetContext();
@@ -29,6 +30,7 @@ function EmptyView() {
   );
 }
 function TopBar({ pet }: PetProps) {
+  const { handleCheckoutPet } = usePetContext();
   return (
     <div className="flex items-center bg-white px-8 py-5 border-b border-light">
       <Image
@@ -39,6 +41,13 @@ function TopBar({ pet }: PetProps) {
         height={75}
       />
       <h2 className="text-3xl font-semibold leading-7 ml-5">{pet.name}</h2>
+      <div className="ml-auto space-x-2 ">
+        <PetButton actionType={"edit"} />
+        <PetButton
+          onClick={() => handleCheckoutPet(pet.id)}
+          actionType={"checkout"}
+        />
+      </div>
     </div>
   );
 }
