@@ -4,6 +4,7 @@ import BackgroundPattern from "@/components/background-pattern";
 import PetContextProvider from "@/context/pet-context-provider";
 import SearchContextProvider from "@/context/search-context-provider";
 import prisma from "@/lib/db";
+import { Toaster } from "sonner";
 
 export default async function Layout({
   children,
@@ -21,6 +22,8 @@ export default async function Layout({
         </PetContextProvider>
         <AppFooter />
       </div>
+
+      <Toaster />
     </>
   );
 }
