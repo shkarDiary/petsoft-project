@@ -2,8 +2,7 @@
 import { usePetContext } from "@/lib/hooks";
 import Image from "next/image";
 import PetButton from "./pet-button";
-import { deletePet } from "@/actions/actions";
-import { useTransition } from "react";
+import { Pet } from "@prisma/client";
 
 export default function PetDetails() {
   const { selectedPet } = usePetContext();
@@ -38,7 +37,7 @@ function TopBar({ pet }: PetProps) {
       <Image
         className="h-[75px] w-[75px] rounded-full object-cover"
         src={pet.imageUrl}
-        alt=" "
+        alt="Pet image"
         width={75}
         height={75}
       />
