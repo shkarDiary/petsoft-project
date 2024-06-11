@@ -3,11 +3,9 @@
 import prisma from "@/lib/db";
 import { sleep } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
-import { PetEssentials } from "@/lib/types";
-import { Pet } from "@prisma/client";
-import { petFormSchema } from "@/lib/validations";
+import { petFormSchema, petIdSchema } from "@/lib/validations";
 
-export async function addPet(petData: PetEssentials) {
+export async function addPet(petData: unknown) {
   await sleep(1000);
 
   const validatedPet = petFormSchema.safeParse(petData);
@@ -29,25 +27,41 @@ export async function addPet(petData: PetEssentials) {
 
   revalidatePath("/app", "layout");
 }
-export async function deletePet(id: Pet["id"]) {
+export async function deletePet(id: unknown) {
   await sleep(1000);
-
+  const validatedId = petIdSchema.safeParse(id);
+  if (!validatedId.success) {
+    return {
+      message: validatedId.error.message,
+    };
+  }
   await prisma.pet.delete({
     where: {
-      id: id,
+      id: validatedId.data,
     },
   });
   revalidatePath("/app", "layout");
 }
-export async function editPet(petId: Pet["id"], petData: PetEssentials) {
+export async function editPet(petId: unknown, petData: unknown) {
   await sleep(1000);
-
+  const validatedPet = petFormSchema.safeParse(petData);
+  if (!validatedPet.success) {
+    return {
+      message: validatedPet.error.message,
+    };
+  }
+  const validatedId = petIdSchema.safeParse(petId);
+  if (!validatedId.success) {
+    return {
+      message: validatedId.error.message,
+    };
+  }
   try {
     await prisma.pet.update({
       where: {
-        id: petId,
+        id: validatedId.data,
       },
-      data: petData,
+      data: validatedPet,
     });
   } catch (e) {
     return { message: "Invalid id" };

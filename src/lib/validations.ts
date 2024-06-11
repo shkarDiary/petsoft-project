@@ -27,3 +27,5 @@ export const petFormSchema = z
     ...data,
     imageUrl: data.imageUrl || DEFAULT_PET_IMAGE,
   }));
+
+export const petIdSchema = z.string().cuid();
