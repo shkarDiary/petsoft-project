@@ -12,14 +12,6 @@ type PetformProps = {
   actionType?: "add" | "edit";
   onFormSubmision: () => void;
 };
-type TPetForm = {
-  name: string;
-  ownerName: string;
-  age: string;
-  imageUrl: string;
-  notes: string;
-};
-
 const petFormSchema = z.object({
   name: z
     .string()
@@ -50,7 +42,7 @@ export default function PetForm({ actionType, onFormSubmision }: PetformProps) {
     register,
     trigger,
     formState: { errors },
-  } = useForm<TPetForm>({
+  } = useForm<z.infer<typeof petFormSchema>>({
     resolver: zodResolver(petFormSchema),
   });
 
