@@ -12,6 +12,9 @@ export default async function Layout({
   children: React.ReactNode;
 }) {
   const pets = await prisma.pet.findMany();
+  const user = await prisma.user.findFirst();
+  console.log(user);
+
   return (
     <>
       <BackgroundPattern />
