@@ -25,13 +25,16 @@ export default function PetForm({ actionType, onFormSubmision }: PetformProps) {
     formState: { errors },
   } = useForm<z.infer<typeof petFormSchema>>({
     resolver: zodResolver(petFormSchema),
-    defaultValues: {
-      name: selectedPet?.name,
-      ownerName: selectedPet?.ownerName,
-      imageUrl: selectedPet?.imageUrl,
-      age: selectedPet?.age,
-      notes: selectedPet?.notes,
-    },
+    defaultValues:
+      actionType === "add"
+        ? {
+            name: selectedPet?.name,
+            ownerName: selectedPet?.ownerName,
+            imageUrl: selectedPet?.imageUrl,
+            age: selectedPet?.age,
+            notes: selectedPet?.notes,
+          }
+        : undefined,
   });
 
   return (

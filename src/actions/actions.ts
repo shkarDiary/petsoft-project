@@ -4,10 +4,15 @@ import prisma from "@/lib/db";
 import { sleep } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
 import { petFormSchema, petIdSchema } from "@/lib/validations";
+import { auth } from "@/auth";
 
 export async function addPet(petData: unknown) {
-  await sleep(1000);
-
+  const session = await auth();
+  if (!session?.user) {
+    return {
+      message: "You must be logged in to add a pet",
+    };
+  }
   const validatedPet = petFormSchema.safeParse(petData);
   if (!validatedPet.success) {
     return {
@@ -17,7 +22,10 @@ export async function addPet(petData: unknown) {
 
   try {
     await prisma.pet.create({
-      data: validatedPet.data,
+      data: {
+        ...validatedPet.data,
+        User: { connect: { id: session.user.id } },
+      },
     });
   } catch (e) {
     return {

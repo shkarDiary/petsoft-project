@@ -1,14 +1,9 @@
-import { NextResponse } from "next/server";
+import NextAuth from "next-auth";
+import { authConfig } from "@/auth.config";
 
-import { auth } from "./lib/auth";
-
-// export function middleware(request: Request) {
-//   console.log(request.url);
-//   return NextResponse.next();
-// }
-
-export default auth;
+export default NextAuth(authConfig).auth;
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  // https://nextjs.org/docs/app/building-your-application/routing/middleware#matcher
+  matcher: ["/((?!api|_next/static|_next/image|.*\\.png$).*)"],
 };
