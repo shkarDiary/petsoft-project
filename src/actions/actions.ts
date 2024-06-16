@@ -4,16 +4,11 @@ import prisma from "@/lib/db";
 import { sleep } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
 import { petFormSchema, petIdSchema } from "@/lib/validations";
-import { auth } from "@/auth";
-import { redirect } from "next/navigation";
+import { checkAuth, getPetById } from "@/lib/server-utils";
 
 export async function addPet(petData: unknown) {
-  const session = await auth();
-  if (!session?.user) {
-    return {
-      message: "You must be logged in to add a pet",
-    };
-  }
+  const session = await checkAuth();
+
   const validatedPet = petFormSchema.safeParse(petData);
   if (!validatedPet.success) {
     return {
@@ -40,18 +35,15 @@ export async function addPet(petData: unknown) {
 export async function deletePet(id: unknown) {
   await sleep(1000);
   const validatedId = petIdSchema.safeParse(id);
-
-  //cheking authentication
-  const session = await auth();
-  if (!session?.user) {
-    redirect("/login");
+  if (!validatedId.success) {
+    return {
+      message: validatedId.error.message,
+    };
   }
+  //cheking authentication
+  const session = await checkAuth();
   //checking authorazation if the user is the owner of the pet
-  const pet = await prisma.pet.findUnique({
-    where: {
-      id: validatedId.data,
-    },
-  });
+  const pet = await getPetById(validatedId.data);
 
   if (!pet) {
     return {
@@ -62,12 +54,6 @@ export async function deletePet(id: unknown) {
   if (pet.userId !== session.user.id) {
     return {
       message: "You are not the owner of this pet",
-    };
-  }
-
-  if (!validatedId.success) {
-    return {
-      message: validatedId.error.message,
     };
   }
 
@@ -86,10 +72,7 @@ export async function editPet(petId: unknown, petData: unknown) {
   const validatedId = petIdSchema.safeParse(petId);
 
   //cheking authentication
-  const session = await auth();
-  if (!session?.user) {
-    redirect("/login");
-  }
+  const session = await checkAuth();
 
   //checking authorazation if the user is the owner of the pet
   const pet = await prisma.pet.findUnique({
