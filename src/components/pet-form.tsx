@@ -26,7 +26,7 @@ export default function PetForm({ actionType, onFormSubmision }: PetformProps) {
   } = useForm<z.infer<typeof petFormSchema>>({
     resolver: zodResolver(petFormSchema),
     defaultValues:
-      actionType === "add"
+      actionType === "edit"
         ? {
             name: selectedPet?.name,
             ownerName: selectedPet?.ownerName,
