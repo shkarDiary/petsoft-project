@@ -3,8 +3,7 @@ import AppHeader from "@/components/app-header";
 import BackgroundPattern from "@/components/background-pattern";
 import PetContextProvider from "@/context/pet-context-provider";
 import SearchContextProvider from "@/context/search-context-provider";
-import prisma from "@/lib/db";
-import { checkAuth } from "@/lib/server-utils";
+import { checkAuth, getPetByUserId } from "@/lib/server-utils";
 import { Toaster } from "sonner";
 
 export default async function Layout({
@@ -14,11 +13,11 @@ export default async function Layout({
 }) {
   const session = await checkAuth();
 
-  const pets = await prisma.pet.findMany({
-    where: {
-      userId: session?.user.id,
-    },
-  });
+  const pets = await getPetByUserId(session.user.id);
+
+  if (!pets) {
+    return;
+  }
 
   return (
     <>

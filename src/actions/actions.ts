@@ -34,7 +34,9 @@ export async function addPet(petData: unknown) {
 
 export async function deletePet(id: unknown) {
   await sleep(1000);
+
   const validatedId = petIdSchema.safeParse(id);
+
   if (!validatedId.success) {
     return {
       message: validatedId.error.message,
@@ -71,15 +73,17 @@ export async function editPet(petId: unknown, petData: unknown) {
   const validatedPet = petFormSchema.safeParse(petData);
   const validatedId = petIdSchema.safeParse(petId);
 
+  if (!validatedPet.success || !validatedId.success) {
+    return {
+      message: "Invalid data",
+    };
+  }
+
   //cheking authentication
   const session = await checkAuth();
 
   //checking authorazation if the user is the owner of the pet
-  const pet = await prisma.pet.findUnique({
-    where: {
-      id: validatedId.data,
-    },
-  });
+  const pet = await getPetById(validatedId.data);
 
   if (!pet) {
     return {
@@ -93,16 +97,6 @@ export async function editPet(petId: unknown, petData: unknown) {
     };
   }
 
-  if (!validatedPet.success) {
-    return {
-      message: validatedPet.error.message,
-    };
-  }
-  if (!validatedId.success) {
-    return {
-      message: validatedId.error.message,
-    };
-  }
   try {
     await prisma.pet.update({
       where: {
